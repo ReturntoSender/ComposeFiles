@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     environment:
       DOMAIN: "https://pm.xingerit.de"
+      # ADMIN_TOKEN noch hinzufügen
     volumes:
       - /mnt/data/bitwarden:/data/
     ports:
