@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  broker:
+    image: redis:7.4.6
+    container_name: paperless-broker
+    restart: unless-stopped
+    volumes:
+      - /mnt/data/paperless-ngx/paperless-ngx_redisdata:/data
+
+  db:
+    image: postgres:17
+    container_name: paperless-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: paperless
+    volumes:
+      - /mnt/data/paperless-ngx/paperless-ngx_pgdata:/var/lib/postgresql/data
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.18.4
+    container_name: paperless-webserver
+    restart: unless-stopped
+    depends_on:
+      - db
+      - broker
+    ports:
+      - "8010:8000"
+    environment:
+      # Datenbank & Redis
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBHOST: db
+      PAPERLESS_DBNAME: paperless
+      PAPERLESS_DBUSER: paperless
+      PAPERLESS_DBPASS: paperless
+
+      # Admin & Konfiguration
+      PAPERLESS_SECRET_KEY: supergeheim
+      PAPERLESS_ADMIN_USER: admin
+      PAPERLESS_ADMIN_PASSWORD: Sonnikita2003
+      PAPERLESS_OCR_LANGUAGE: deu+eng
+      PAPERLESS_CONSUMER_DELETE_DUPLICATES: true
+      PAPERLESS_CONSUMER_POLLING: 15
+
+      # UID/GID für Dateizugriff
+      USERMAP_UID: 0
+      USERMAP_GID: 0
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+    volumes:
+      - /mnt/data/paperless-ngx/paperless-ngx_data:/usr/src/paperless/data
+      - /mnt/data/paperless-ngx/paperless-ngx_media:/usr/src/paperless/media
+      - /mnt/data/paperless-ngx/paperless-ngx_export:/usr/src/paperless/export
+      - /mnt/data/paperless-ngx/paperless-ngx_consume:/usr/src/paperless/consume
+
+volumes:
+  redisdata:
+  pgdata:
+  data:
+  media:
