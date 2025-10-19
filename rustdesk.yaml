@@ -1,13 +1,4 @@
 services:
-  hbbr:
-    container_name: rustdesk-relay
-    image: rustdesk/rustdesk-server:latest
-    command: hbbr
-    volumes:
-      - /mnt/data/rustdesk/root:/root
-    network_mode: "host"
-    restart: unless-stopped
-
   hbbs:
     container_name: rustdesk-id
     image: rustdesk/rustdesk-server:latest
@@ -20,4 +11,13 @@ services:
 
     depends_on:
       - hbbr
+    restart: unless-stopped
+
+  hbbr:
+    container_name: rustdesk-relay
+    image: rustdesk/rustdesk-server:latest
+    command: hbbr
+    volumes:
+      - /mnt/data/rustdesk/root:/root
+    network_mode: "host"
     restart: unless-stopped
