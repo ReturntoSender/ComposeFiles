@@ -1,0 +1,13 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      DOMAIN: "https://pm.xingerit.de"
+    volumes:
+      - /mnt/data/bitwarden:/data/
+    ports:
+      - 49154:80
+    network:
+      - host
