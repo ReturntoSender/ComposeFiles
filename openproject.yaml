@@ -1,0 +1,13 @@
+services:
+  vaultwarden:
+    image: openproject/openproject:16
+    container_name: openproject
+    restart: unless-stopped
+    environment:
+      SECRET_KEY_BASE: secret
+      OPENPROJECT_HOST__NAME: op.xingerit.de
+      OPENPROJECT_HTTPS: false
+      OPENPROJECT_DEFAULT__LANGUAGE: de
+      # ADMIN_TOKEN noch hinzufügen
+    ports:
+      - 8080:80
